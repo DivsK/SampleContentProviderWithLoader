@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SampleContentProviderWithLoader</string>
+    <string name="images_from_gallery">Images from gallery</string>
+    <string name="request_gallery_data">Request Photos</string>
+    <string name="request_contacts">Request Contacts</string>
+    <string name="contacts_image">Contacts image</string>
+</resources>
