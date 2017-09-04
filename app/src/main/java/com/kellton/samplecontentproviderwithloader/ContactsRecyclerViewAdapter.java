@@ -1,6 +1,5 @@
 package com.kellton.samplecontentproviderwithloader;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,8 +34,13 @@ class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRecyclerV
     @Override
     public void onBindViewHolder(ContactsRecyclerViewAdapter.ViewHolder holder, int position) {
         ContactDetails contactDetails = mContactDetailsList.get(position);
-        if (contactDetails.ContactPhoto != null)
+        if (contactDetails.ContactPhoto == null)
+        {
+            holder.ivContact.setImageResource(R.drawable.default_contact);
+        }
+        else{
             holder.ivContact.setImageURI(contactDetails.ContactPhoto);
+        }
         holder.tvContactName.setText(contactDetails.ContactName);
         holder.tvContactNo.setText(contactDetails.ContactNo);
 

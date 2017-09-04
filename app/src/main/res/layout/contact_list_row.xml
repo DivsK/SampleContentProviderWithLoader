@@ -21,7 +21,7 @@
             android:layout_toEndOf="@id/iv_contacts"
             android:layout_toRightOf="@id/iv_contacts"
             android:gravity="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display2" />
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1" />
 
         <TextView
             android:id="@+id/tv_contact_number"
