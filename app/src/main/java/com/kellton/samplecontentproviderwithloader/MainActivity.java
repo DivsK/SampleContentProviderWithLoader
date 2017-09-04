@@ -13,37 +13,41 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, android.app.LoaderManager.LoaderCallbacks<Cursor> {
 
-    private String[] mProjetion = new String[] {MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME};;
+    private String[] mProjetion = null;
     private String mSelection = null;
     private String mSortOrder = null;
     private String[] mColumnNames;
+
     private static final int REQUEST_MEDIA_READ_PERMISSION =1;
+
     private TextView mTextView;
-    private ImageView mImageView;
-    private Bitmap bitmap;
-    private Button mBtnGetMediaData;
 
     private String TAG=MainActivity.class.getSimpleName();
     private boolean mMediaFirstTimeLoader =false;
     private int REQUEST_CONTACTS_READ_PERMISSION=2;
-    private Button mBtnGetContactsData;
     private boolean mContactsFirstTimeLoader=false;
 
     String[] projection= new String[] {ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
             ContactsContract.CommonDataKinds.Phone.NUMBER,ContactsContract.CommonDataKinds.Phone.PHOTO_URI};
-    private RecyclerView mRecyclerView;
+
+    private ArrayList<Bitmap> mMediaImages;
+    private ArrayList<ContactDetails> mContactDetailsList;
+    private MediaRecyclerViewAdapter mMediaRecyclerViewAdapter;
+    private ContactsRecyclerViewAdapter mContactsRecyclerViewAdapter;
 
 
     @Override
@@ -51,13 +55,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initUI();
+
+    }
+
+    private void initUI() {
+
+
         mTextView = (TextView) findViewById(R.id.tv);
-        mImageView = (ImageView) findViewById(R.id.iv);
-        mRecyclerView=(RecyclerView)findViewById(R.id.recyclerview);
-        mBtnGetMediaData =(Button)findViewById(R.id.btn_get_gallery_data);
-        mBtnGetContactsData=(Button)findViewById(R.id.btn_get_contacts_data);
-        mBtnGetMediaData.setOnClickListener(this);
-        mBtnGetContactsData.setOnClickListener(this);
+        RecyclerView mediaRecyclerView = (RecyclerView) findViewById(R.id.media_recycler_view);
+        mediaRecyclerView.setHasFixedSize(true);
+        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
+        staggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        mediaRecyclerView.setLayoutManager(staggeredGridLayoutManager);
+
+        mMediaImages =new ArrayList<>();
+        mMediaRecyclerViewAdapter = new MediaRecyclerViewAdapter(this,mMediaImages);
+        mediaRecyclerView.setAdapter(mMediaRecyclerViewAdapter);
+
+        mContactDetailsList=new ArrayList<>();
+        mContactsRecyclerViewAdapter=new ContactsRecyclerViewAdapter(this,mContactDetailsList);
+        RecyclerView contactsRecyclerView= (RecyclerView) findViewById(R.id.contacts_recycler_view);
+        contactsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        contactsRecyclerView.setAdapter(mContactsRecyclerViewAdapter);
+
+        Button btnGetMediaData = (Button) findViewById(R.id.btn_get_gallery_data);
+        Button btnGetContactsData = (Button) findViewById(R.id.btn_get_contacts_data);
+        btnGetMediaData.setOnClickListener(this);
+        btnGetContactsData.setOnClickListener(this);
 
     }
 
@@ -124,22 +149,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case 1:
                 while (cursor.moveToNext()) {
                     mColumnNames = cursor.getColumnNames();
-                    // Build URI to the main image from the cursor
+
                     int imageID = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media._ID));
-                    bitmap = MediaStore.Images.Thumbnails.getThumbnail(this.getContentResolver(), imageID, MediaStore.Images.Thumbnails.MINI_KIND, null);
+                    Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(this.getContentResolver(), imageID, MediaStore.Images.Thumbnails.MINI_KIND, null);
+                    mMediaImages.add(bitmap);
                 }
+                mMediaRecyclerViewAdapter.setmMediaImages(mMediaImages);
+                mMediaRecyclerViewAdapter.notifyDataSetChanged();
                 mTextView.setText(Arrays.toString(mColumnNames));
-                mImageView.setImageBitmap(bitmap);
                 break;
 
             case 2:
                 while (cursor.moveToNext()) {
                   mColumnNames=cursor.getColumnNames();
-                    mTextView.setText(String.format("%s\n", cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))));
-                    mTextView.append(cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))+"\n");
-                    mImageView.setImageURI(Uri.parse(cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))));
-//String contactId = cursor.getString(cursor.getColumnIndex(String.valueOf(ContactsContract.CommonDataKinds.Phone.CONTENT_URI)));
+
+                    ContactDetails contactDetails = new ContactDetails();
+                    contactDetails.ContactName=cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
+                    contactDetails.ContactNo=cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    contactDetails.ContactPhoto=Uri.parse(cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.PHOTO_URI)));
+                    mContactDetailsList.add(contactDetails);
                 }
+                mContactsRecyclerViewAdapter.setmContactDetailsList(mContactDetailsList);
+                mContactsRecyclerViewAdapter.notifyDataSetChanged();
                 mTextView.append(Arrays.toString(mColumnNames));
                 break;
 

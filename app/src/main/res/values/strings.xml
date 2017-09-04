@@ -4,4 +4,5 @@
     <string name="request_gallery_data">Request Photos</string>
     <string name="request_contacts">Request Contacts</string>
     <string name="contacts_image">Contacts image</string>
+    <string name="gallery_pictures">Gallery pictures</string>
 </resources>
