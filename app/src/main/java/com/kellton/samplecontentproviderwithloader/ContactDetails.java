@@ -7,6 +7,7 @@ import android.net.Uri;
  */
 
 public class ContactDetails {
+
     public String ContactName;
     public String ContactNo;
     public Uri ContactPhoto;

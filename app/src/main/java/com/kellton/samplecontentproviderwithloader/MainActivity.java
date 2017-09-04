@@ -1,6 +1,7 @@
 package com.kellton.samplecontentproviderwithloader;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.content.pm.PackageManager;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<ContactDetails> mContactDetailsList;
     private MediaRecyclerViewAdapter mMediaRecyclerViewAdapter;
     private ContactsRecyclerViewAdapter mContactsRecyclerViewAdapter;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        createProgressDialog();
         initUI();
 
     }
@@ -213,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else{
             Toast.makeText(this, "Nothing here", Toast.LENGTH_LONG).show();
         }
+        progressDialog.dismiss();
     }
 
     @Override
@@ -220,4 +224,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    public void createProgressDialog() {
+        progressDialog = new ProgressDialog(MainActivity.this, R.style.Theme_AppCompat_DayNight_Dialog_Alert);
+        progressDialog.setMessage("Loading Data Please Wait!!!");
+        progressDialog.show();
+    }
 }
