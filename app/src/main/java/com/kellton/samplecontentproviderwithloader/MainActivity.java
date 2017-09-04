@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void loadData(int loadId, boolean loadDataFor) {
         if(!loadDataFor){
             getLoaderManager().initLoader(loadId,null,this);
-            loadDataFor =true;
         }
         else {
             getLoaderManager().restartLoader(loadId,null,this);
@@ -188,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             count++;
                         }
                     }
+                    mMediaFirstTimeLoader=true;
                     mMediaRecyclerViewAdapter.setmMediaImages(mMediaImages);
                     mMediaRecyclerViewAdapter.notifyDataSetChanged();
                     Log.i("All columns present", Arrays.toString(mColumnNames));
@@ -206,6 +206,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                         mContactDetailsList.add(contactDetails);
                     }
+                    mContactsFirstTimeLoader=true;
                     mContactsRecyclerViewAdapter.setmContactDetailsList(mContactDetailsList);
                     mContactsRecyclerViewAdapter.notifyDataSetChanged();
                     Log.i("All columns present", Arrays.toString(mColumnNames));
