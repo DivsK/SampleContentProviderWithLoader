@@ -13,6 +13,7 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -74,13 +75,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mediaRecyclerView.setAdapter(mMediaRecyclerViewAdapter);
 
         mContactDetailsList=new ArrayList<>();
-        mContactsRecyclerViewAdapter=new ContactsRecyclerViewAdapter(this,mContactDetailsList);
+        mContactsRecyclerViewAdapter=new ContactsRecyclerViewAdapter(mContactDetailsList);
+
         RecyclerView contactsRecyclerView= (RecyclerView) findViewById(R.id.contacts_recycler_view);
-        contactsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager layoutManager=new LinearLayoutManager(this);
+        contactsRecyclerView.setLayoutManager(layoutManager);
+
+        DividerItemDecoration itemDecoration=new DividerItemDecoration(MainActivity.this,LinearLayoutManager.VERTICAL);
+        contactsRecyclerView.addItemDecoration(itemDecoration);
         contactsRecyclerView.setAdapter(mContactsRecyclerViewAdapter);
 
         Button btnGetMediaData = (Button) findViewById(R.id.btn_get_gallery_data);
         Button btnGetContactsData = (Button) findViewById(R.id.btn_get_contacts_data);
+
         btnGetMediaData.setOnClickListener(this);
         btnGetContactsData.setOnClickListener(this);
 
@@ -118,10 +125,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_MEDIA_READ_PERMISSION);
                 }
+                else{
+                    if(!mMediaFirstTimeLoader){
+                        getLoaderManager().initLoader(1,null,this);
+                        mMediaFirstTimeLoader =true;
+                    }
+                    else {
+                        getLoaderManager().restartLoader(1,null,this);
+                    }
+                }
                 break;
             case R.id.btn_get_contacts_data:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CONTACTS_READ_PERMISSION);
+                }
+                else {
+                    if(!mContactsFirstTimeLoader){
+                        getLoaderManager().initLoader(2,null,this);
+                        mContactsFirstTimeLoader =true;
+                    }
+                    else {
+                        getLoaderManager().restartLoader(2,null,this);
+                    }
                 }
                 break;
             default:
@@ -151,8 +176,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     mColumnNames = cursor.getColumnNames();
 
                     int imageID = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media._ID));
-                    Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(this.getContentResolver(), imageID, MediaStore.Images.Thumbnails.MINI_KIND, null);
-                    mMediaImages.add(bitmap);
+                    if(MediaStore.Images.Thumbnails.getThumbnail(this.getContentResolver(), imageID, MediaStore.Images.Thumbnails.MINI_KIND, null)!=null){
+                        Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(this.getContentResolver(), imageID, MediaStore.Images.Thumbnails.MINI_KIND, null);
+                        mMediaImages.add(bitmap);
+                    }
+
                 }
                 mMediaRecyclerViewAdapter.setmMediaImages(mMediaImages);
                 mMediaRecyclerViewAdapter.notifyDataSetChanged();
@@ -166,7 +194,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     ContactDetails contactDetails = new ContactDetails();
                     contactDetails.ContactName=cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
                     contactDetails.ContactNo=cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    contactDetails.ContactPhoto=Uri.parse(cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.PHOTO_URI)));
+                    if(cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))!=null){
+                        contactDetails.ContactPhoto=Uri.parse(cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.PHOTO_URI)));
+                    }
                     mContactDetailsList.add(contactDetails);
                 }
                 mContactsRecyclerViewAdapter.setmContactDetailsList(mContactDetailsList);

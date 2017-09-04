@@ -14,19 +14,16 @@ import java.util.ArrayList;
  * Created by ubuntu on 4/9/17.
  */
 
-class ContactsRecyclerViewAdapter  extends RecyclerView.Adapter<ContactsRecyclerViewAdapter.ViewHolder> {
+class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRecyclerViewAdapter.ViewHolder> {
     private ArrayList<ContactDetails> mContactDetailsList;
-    private Context mContext;
 
-    ContactsRecyclerViewAdapter(Context context, ArrayList<ContactDetails> contactDetailsList) {
-        mContext=context;
-        mContactDetailsList=contactDetailsList;
+    ContactsRecyclerViewAdapter(ArrayList<ContactDetails> contactDetailsList) {
+        mContactDetailsList = contactDetailsList;
     }
 
     @Override
     public ContactsRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.contact_list_row, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.contact_list_row, parent, false);
 
         return new ViewHolder(view);
     }
@@ -37,10 +34,11 @@ class ContactsRecyclerViewAdapter  extends RecyclerView.Adapter<ContactsRecycler
 
     @Override
     public void onBindViewHolder(ContactsRecyclerViewAdapter.ViewHolder holder, int position) {
-
-        holder.ivContact.setImageURI(mContactDetailsList.get(position).ContactPhoto);
-        holder.tvContactName.setText(mContactDetailsList.get(position).ContactName);
-        holder.tvContactNo.setText(mContactDetailsList.get(position).ContactNo);
+        ContactDetails contactDetails = mContactDetailsList.get(position);
+        if (contactDetails.ContactPhoto != null)
+            holder.ivContact.setImageURI(contactDetails.ContactPhoto);
+        holder.tvContactName.setText(contactDetails.ContactName);
+        holder.tvContactNo.setText(contactDetails.ContactNo);
 
     }
 
@@ -58,9 +56,9 @@ class ContactsRecyclerViewAdapter  extends RecyclerView.Adapter<ContactsRecycler
 
         ViewHolder(View itemView) {
             super(itemView);
-            ivContact=(ImageView)itemView.findViewById(R.id.iv_contacts);
-            tvContactName=(TextView)itemView.findViewById(R.id.tv_contact_name);
-            tvContactNo=(TextView)itemView.findViewById(R.id.tv_contact_number);
+            ivContact = (ImageView) itemView.findViewById(R.id.iv_contacts);
+            tvContactName = (TextView) itemView.findViewById(R.id.tv_contact_name);
+            tvContactNo = (TextView) itemView.findViewById(R.id.tv_contact_number);
         }
     }
 }
