@@ -50,11 +50,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView mContactsRecyclerView;
     private ProgressBar mProgressBar;
 
+    private static boolean dataDownloaded = false;
+    private static Cursor oldCursor;
+    private static int mLoadId;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (savedInstanceState != null) {
+
+            dataDownloaded = savedInstanceState.getBoolean("datadownloaded", false);
+            mLoadId=savedInstanceState.getInt("loaderId");
+            loadData(mLoadId);
+        }
 
         initUI();
 
@@ -92,6 +103,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outSave) {
+        outSave.putBoolean("datadownloaded", dataDownloaded);
+        outSave.putInt("loaderId",mLoadId);
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_MEDIA_READ_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             loadData(1);
@@ -106,7 +123,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void loadData(int loadId) {
-            getLoaderManager().initLoader(loadId,null,MainActivity.this);
+        mLoadId=loadId;
+            getLoaderManager().initLoader(mLoadId,null,MainActivity.this);
     }
 
     @Override
@@ -148,19 +166,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-        switch (id){
-            case 1:
-                return new CursorLoader(this,MediaStore.Images.Media.EXTERNAL_CONTENT_URI, mProjetion, mSelection, null, mSortOrder);
-            case 2:
-                return new CursorLoader(this,  ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, mSelection, null, mSortOrder);
-            default:
-                return null;
-        }
+        CursorLoader cursorLoader;
+            switch (id){
+                case 1:
+                    cursorLoader=new CursorLoader(this,MediaStore.Images.Media.EXTERNAL_CONTENT_URI, mProjetion, mSelection, null, mSortOrder);
+                    break;
+                case 2:
+                    cursorLoader= new CursorLoader(this,  ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, mSelection, null, mSortOrder);
+                    break;
+                default:
+                    return null;
+            }
+            return cursorLoader;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToPosition(-1);
             switch (loader.getId()){
                 case 1:
                     mMediaImages.clear();
@@ -208,6 +231,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
 
             }
+            dataDownloaded=true;
+            oldCursor=cursor;
         }
         else{
             Toast.makeText(this, "Nothing here", Toast.LENGTH_LONG).show();
@@ -216,8 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mMediaImages.clear();
-        mContactDetailsList.clear();
+        oldCursor=null;
     }
 
 }
