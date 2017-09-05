@@ -1,7 +1,6 @@
 package com.kellton.samplecontentproviderwithloader;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.content.pm.PackageManager;
@@ -21,7 +20,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final int REQUEST_MEDIA_READ_PERMISSION =1;
     private int count=0;
-    private TextView mTextView;
 
     private String TAG=MainActivity.class.getSimpleName();
     private boolean mMediaFirstTimeLoader =false;
@@ -52,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ContactsRecyclerViewAdapter mContactsRecyclerViewAdapter;
     private RecyclerView mMediaRecyclerView;
     private RecyclerView mContactsRecyclerView;
-    private ProgressDialog progressDialog;
+    private ProgressBar mProgressBar;
 
 
     @Override
@@ -66,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initUI() {
 
+        mProgressBar=(ProgressBar)findViewById(R.id.progress_bar);
         mMediaRecyclerView = (RecyclerView) findViewById(R.id.media_recycler_view);
         mMediaRecyclerView.setHasFixedSize(true);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,4);
@@ -122,7 +121,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()){
             case R.id.btn_get_gallery_data:
 
-                createProgressDialog();
+                mProgressBar.setVisibility(View.VISIBLE);
+
                 mContactsRecyclerView.setVisibility(View.GONE);
                 mMediaRecyclerView.setVisibility(View.VISIBLE);
 
@@ -136,7 +136,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_get_contacts_data:
 
-                createProgressDialog();
+                mProgressBar.setVisibility(View.VISIBLE);
+
                 mMediaRecyclerView.setVisibility(View.GONE);
                 mContactsRecyclerView.setVisibility(View.VISIBLE);
 
@@ -191,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     mMediaRecyclerViewAdapter.setmMediaImages(mMediaImages);
                     mMediaRecyclerViewAdapter.notifyDataSetChanged();
                     Log.i("All columns present", Arrays.toString(mColumnNames));
-                    progressDialog.dismiss();
+                    mProgressBar.setVisibility(View.GONE);
                     break;
 
                 case 2:
@@ -210,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     mContactsRecyclerViewAdapter.setmContactDetailsList(mContactDetailsList);
                     mContactsRecyclerViewAdapter.notifyDataSetChanged();
                     Log.i("All columns present", Arrays.toString(mColumnNames));
-                    progressDialog.dismiss();
+                    mProgressBar.setVisibility(View.GONE);
                     break;
 
                 default:
@@ -229,9 +230,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void createProgressDialog() {
-        progressDialog = new ProgressDialog(MainActivity.this, R.style.Theme_AppCompat_DayNight_Dialog_Alert);
-        progressDialog.setMessage("Loading Data Please Wait!!!");
-        progressDialog.show();
-    }
 }

@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by ubuntu on 4/9/17.
+ * @author Divya Khanduri
  */
 
 class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRecyclerViewAdapter.ViewHolder> {
@@ -60,9 +60,9 @@ class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRecyclerV
 
         ViewHolder(View itemView) {
             super(itemView);
-            ivContact = (ImageView) itemView.findViewById(R.id.iv_contacts);
-            tvContactName = (TextView) itemView.findViewById(R.id.tv_contact_name);
-            tvContactNo = (TextView) itemView.findViewById(R.id.tv_contact_number);
+            ivContact = itemView.findViewById(R.id.iv_contacts);
+            tvContactName = itemView.findViewById(R.id.tv_contact_name);
+            tvContactNo = itemView.findViewById(R.id.tv_contact_number);
         }
     }
 }
