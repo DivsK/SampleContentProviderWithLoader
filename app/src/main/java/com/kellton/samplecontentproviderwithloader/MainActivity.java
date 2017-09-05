@@ -37,9 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int count=0;
 
     private String TAG=MainActivity.class.getSimpleName();
-    private boolean mMediaFirstTimeLoader =false;
     private int REQUEST_CONTACTS_READ_PERMISSION=2;
-    private boolean mContactsFirstTimeLoader=false;
 
     String[] projection= new String[] {ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
             ContactsContract.CommonDataKinds.Phone.NUMBER,ContactsContract.CommonDataKinds.Phone.PHOTO_URI};
@@ -96,10 +94,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_MEDIA_READ_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            loadData(1,mMediaFirstTimeLoader);
+            loadData(1);
         }
         else if(requestCode == REQUEST_CONTACTS_READ_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-            loadData(2,mContactsFirstTimeLoader);
+            loadData(2);
         }
         else {
             Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
@@ -107,13 +105,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private void loadData(int loadId, boolean loadDataFor) {
-        if(!loadDataFor){
-            getLoaderManager().initLoader(loadId,null,this);
-        }
-        else {
-            getLoaderManager().restartLoader(loadId,null,this);
-        }
+    private void loadData(int loadId) {
+            getLoaderManager().initLoader(loadId,null,MainActivity.this);
     }
 
     @Override
@@ -122,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_get_gallery_data:
 
                 mProgressBar.setVisibility(View.VISIBLE);
-
                 mContactsRecyclerView.setVisibility(View.GONE);
                 mMediaRecyclerView.setVisibility(View.VISIBLE);
 
@@ -130,14 +122,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_MEDIA_READ_PERMISSION);
                 }
                 else{
-                    loadData(1,mMediaFirstTimeLoader);
+                    loadData(1);
                 }
 
                 break;
             case R.id.btn_get_contacts_data:
 
                 mProgressBar.setVisibility(View.VISIBLE);
-
                 mMediaRecyclerView.setVisibility(View.GONE);
                 mContactsRecyclerView.setVisibility(View.VISIBLE);
 
@@ -145,9 +136,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CONTACTS_READ_PERMISSION);
                 }
                 else {
-                    loadData(2,mContactsFirstTimeLoader);
+                    loadData(2);
                 }
-
                 break;
             default:
 
@@ -173,10 +163,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (cursor != null && cursor.getCount() > 0) {
             switch (loader.getId()){
                 case 1:
+                    mMediaImages.clear();
                     while (cursor.moveToNext()) {
                         if(count<=103){
                             mColumnNames = cursor.getColumnNames();
-
                             int imageID = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media._ID));
                             if(MediaStore.Images.Thumbnails.getThumbnail(this.getContentResolver(), imageID, MediaStore.Images.Thumbnails.MINI_KIND, null)!=null){
                                 Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(this.getContentResolver(), imageID, MediaStore.Images.Thumbnails.MINI_KIND, null);
@@ -188,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             count++;
                         }
                     }
-                    mMediaFirstTimeLoader=true;
                     mMediaRecyclerViewAdapter.setmMediaImages(mMediaImages);
                     mMediaRecyclerViewAdapter.notifyDataSetChanged();
                     Log.i("All columns present", Arrays.toString(mColumnNames));
@@ -196,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
 
                 case 2:
+                    mContactDetailsList.clear();
                     while (cursor.moveToNext()) {
                         mColumnNames=cursor.getColumnNames();
 
@@ -207,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                         mContactDetailsList.add(contactDetails);
                     }
-                    mContactsFirstTimeLoader=true;
                     mContactsRecyclerViewAdapter.setmContactDetailsList(mContactDetailsList);
                     mContactsRecyclerViewAdapter.notifyDataSetChanged();
                     Log.i("All columns present", Arrays.toString(mColumnNames));
@@ -227,7 +216,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
+        mMediaImages.clear();
+        mContactDetailsList.clear();
     }
 
 }
