@@ -5,4 +5,8 @@
     <string name="request_contacts">Request Contacts</string>
     <string name="contacts_image">Contacts image</string>
     <string name="gallery_pictures">Gallery pictures</string>
+    <string name="wrong_case_selection">Wrong Case Selection</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="data_downloaded">dataDownloaded</string>
+    <string name="loader_id">loaderId</string>
 </resources>

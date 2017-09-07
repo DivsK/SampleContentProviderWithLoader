@@ -1,6 +1,5 @@
 package com.kellton.samplecontentproviderwithloader;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,17 +10,17 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 
 /**
- * Created by ubuntu on 4/9/17.
+ * <h1><font color="orange">MediaRecyclerViewAdapter</font></h1>
+ * Adapter class for setting fetched images to the recycler grid view.
+ *
+ * @author Divya Khanduri
  */
-
-class MediaRecyclerViewAdapter extends RecyclerView.Adapter<MediaRecyclerViewAdapter.ViewHolder>  {
+class MediaRecyclerViewAdapter extends RecyclerView.Adapter<MediaRecyclerViewAdapter.ViewHolder> {
     private ArrayList<Bitmap> mMediaImages;
-    private Context mContext;
 
-    MediaRecyclerViewAdapter(Context context, ArrayList<Bitmap> mediaImages) {
+    MediaRecyclerViewAdapter(ArrayList<Bitmap> mediaImages) {
 
-        mContext=context;
-        mMediaImages=mediaImages;
+        mMediaImages = mediaImages;
     }
 
     void setmMediaImages(ArrayList<Bitmap> mMediaImages) {
@@ -30,8 +29,8 @@ class MediaRecyclerViewAdapter extends RecyclerView.Adapter<MediaRecyclerViewAda
 
     @Override
     public MediaRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-           View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_media, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.layout_media, parent, false);
 
         return new ViewHolder(view);
     }
@@ -39,12 +38,12 @@ class MediaRecyclerViewAdapter extends RecyclerView.Adapter<MediaRecyclerViewAda
     @Override
     public void onBindViewHolder(MediaRecyclerViewAdapter.ViewHolder holder, int position) {
 
-            holder.ivMedia.setImageBitmap(mMediaImages.get(position));
+        holder.ivMedia.setImageBitmap(mMediaImages.get(position));
     }
 
     @Override
     public int getItemCount() {
-            return (null != mMediaImages ? mMediaImages.size() : 0);
+        return (null != mMediaImages ? mMediaImages.size() : 0);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -52,7 +51,7 @@ class MediaRecyclerViewAdapter extends RecyclerView.Adapter<MediaRecyclerViewAda
 
         ViewHolder(View itemView) {
             super(itemView);
-            ivMedia=(ImageView)itemView.findViewById(R.id.iv_media);
+            ivMedia = itemView.findViewById(R.id.iv_media);
         }
     }
 }

@@ -10,9 +10,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
+ * <h1><font color="orange">ContactsRecyclerViewAdapter</font></h1>
+ * Adapter class for setting fetched contacts to the recycler view.
+ *
  * @author Divya Khanduri
  */
-
 class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRecyclerViewAdapter.ViewHolder> {
     private ArrayList<ContactDetails> mContactDetailsList;
 
@@ -34,11 +36,9 @@ class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRecyclerV
     @Override
     public void onBindViewHolder(ContactsRecyclerViewAdapter.ViewHolder holder, int position) {
         ContactDetails contactDetails = mContactDetailsList.get(position);
-        if (contactDetails.ContactPhoto == null)
-        {
+        if (contactDetails.ContactPhoto == null) {
             holder.ivContact.setImageResource(R.drawable.default_contact);
-        }
-        else{
+        } else {
             holder.ivContact.setImageURI(contactDetails.ContactPhoto);
         }
         holder.tvContactName.setText(contactDetails.ContactName);

@@ -3,12 +3,15 @@ package com.kellton.samplecontentproviderwithloader;
 import android.net.Uri;
 
 /**
- * Created by ubuntu on 4/9/17.
+ * <h1><font color="orange">ContactDetails</font></h1>
+ * Model class for saving contact details.
+ *
+ * @author Divya Khanduri
  */
 
-public class ContactDetails {
+class ContactDetails {
 
-    public String ContactName;
-    public String ContactNo;
-    public Uri ContactPhoto;
+    String ContactName;
+    String ContactNo;
+    Uri ContactPhoto;
 }
